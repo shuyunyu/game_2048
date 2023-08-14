@@ -60,3 +60,10 @@ export type CellData = {
     pos: Vec3;
     overSquare?: Square;
 }
+
+export enum MoveDirection {
+    UP = "up",
+    DOWN = "down",
+    LEFT = "left",
+    RIGHT = "right"
+}
