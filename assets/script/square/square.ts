@@ -1,6 +1,8 @@
 import { _decorator, Animation, Color, Component, Label, Node, Sprite } from 'cc';
 const { ccclass, property } = _decorator;
 
+const HIDE_COLOR = new Color(255, 255, 255, 0);
+
 @ccclass('Square')
 export class Square extends Component {
 
@@ -12,7 +14,7 @@ export class Square extends Component {
 
     private _animation: Animation = null;
 
-    start () {
+    onLoad () {
         this._sprite = this.node.getComponent(Sprite);
         this._numberNode = this.node.getChildByName('number');
         this._numberLabel = this._numberNode.getComponent(Label);
@@ -20,12 +22,12 @@ export class Square extends Component {
         this._animation = this.node.getComponent(Animation);
     }
 
-    public empty (spriteColor: Color) {
-        this._sprite.color = spriteColor;
+    public hide () {
+        this._sprite.color = HIDE_COLOR;
         this._numberNode.active = false;
     }
 
-    public showNumber (val: number, spriteColor: Color, fontColor: Color = Color.WHITE) {
+    public show (val: number, spriteColor: Color, fontColor: Color = Color.WHITE) {
         this._sprite.color = spriteColor;
         this._numberLabel.string = String(val);
         this._numberLabel.color = fontColor;

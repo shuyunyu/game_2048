@@ -1,19 +1,33 @@
-import { _decorator, Component, math, Node } from 'cc';
+import { _decorator, Component, instantiate, Layout, math, Node, Prefab } from 'cc';
 import { Square } from '../square/square';
-import { Cell, NumberConfig } from '../constant';
+import { Cell, CellData, NumberConfig } from '../constant';
 const { ccclass, property } = _decorator;
 
 @ccclass('Grid')
 export class Grid extends Component {
 
-    private _squareList: Square[] = [];
+    @property(Prefab)
+    public squarePrefab: Prefab = null;
+
+    private _cellList: CellData[] = [];
 
     private _grid: boolean[][] = [];
 
     private _size = 4;
 
     start () {
-        this._squareList = this.node.children.map(n => n.getComponent(Square));
+        this._cellList = this.node.children.map(n => {
+            const square = n.getComponent(Square);
+            // square.hide();
+            return {
+                square: square,
+                pos: n.worldPosition.clone()
+            }
+        });
+
+        const layout = this.node.getComponent(Layout);
+        layout.enabled = false;
+
         this.initGridData();
     }
 
@@ -47,10 +61,23 @@ export class Grid extends Component {
         }
         const config = this.getLevelConfig(2);
         cells.forEach(cell => {
-            const square = this._squareList[cell.row * this._size + cell.col];
-            square.showNumber(2, config.bgColor, config.fontColor);
+            const cellData = this._cellList[cell.row * this._size + cell.col];
+            //create new square node
+            //TODO USE NODE POOL
+            const squareNode = instantiate(this.squarePrefab);
+            const square = squareNode.getComponent(Square);
+            squareNode.setParent(this.node);
+            squareNode.setWorldPosition(cellData.pos);
+            cellData.overSquare = square;
+            this.updateCellState(cell, true);
+
+            square.show(2, config.bgColor, config.fontColor);
             square.playAni("generate");
         });
+    }
+
+    private updateCellState (cell: Cell, flag: boolean) {
+        this._grid[cell.row][cell.col] = flag;
     }
 
     private findEmptyCells () {

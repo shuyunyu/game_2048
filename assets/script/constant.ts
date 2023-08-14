@@ -1,4 +1,5 @@
-import { Color } from "cc";
+import { Color, Vec3 } from "cc";
+import { Square } from "./square/square";
 
 export type LevelConfig = { bgColor: Color, fontColor: Color };
 
@@ -52,4 +53,10 @@ export const NumberConfig: Record<string, LevelConfig> = {
 export type Cell = {
     row: number;
     col: number;
+}
+
+export type CellData = {
+    square: Square;
+    pos: Vec3;
+    overSquare?: Square;
 }
