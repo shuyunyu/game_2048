@@ -6,4 +6,4 @@
 
 ![](./2048.png)
 
-[在线试玩](http://124.223.202.45/cocos/games/2048)
+[在线试玩](https://yumubai.com/cocos/games/2048)

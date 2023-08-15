@@ -61,7 +61,7 @@ export class GameManager extends Component {
             this.bestLable.string = String(score);
             sys.localStorage.setItem("best-score", this.bestLable.string);
         }
-        if (val === 4 && !this._skipMergedCheck) {
+        if (val === 2048 && !this._skipMergedCheck) {
             if (this.inputManager.enabled) this.inputManager.enabled = false;
             this.gamevictoryRoot.active = true;
         }
