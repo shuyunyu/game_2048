@@ -29,6 +29,7 @@ export class GameManager extends Component {
 
     private onMove (dir: MoveDirection) {
         Log.info(GameManager.name, "dir==>", dir);
+        this.grid.moveCell(dir);
     }
 
 }

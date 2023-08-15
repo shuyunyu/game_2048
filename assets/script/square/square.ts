@@ -1,4 +1,4 @@
-import { _decorator, Animation, Color, Component, Label, Node, Sprite } from 'cc';
+import { _decorator, Animation, Color, Component, Label, Node, Sprite, Tween, Vec2, Vec3 } from 'cc';
 const { ccclass, property } = _decorator;
 
 const HIDE_COLOR = new Color(255, 255, 255, 0);
@@ -13,6 +13,16 @@ export class Square extends Component {
     private _numberLabel: Label = null;
 
     private _animation: Animation = null;
+
+    private _tween: Tween<Node> = null;
+
+    public get isMoving () {
+        return !!this._tween;
+    }
+
+    public get value () {
+        return Number(this._numberLabel.string);
+    }
 
     onLoad () {
         this._sprite = this.node.getComponent(Sprite);
@@ -36,6 +46,17 @@ export class Square extends Component {
 
     public playAni (name: "generate" | "merge") {
         this._animation.play(name);
+    }
+
+    public moveTo (target: Vec3, duration: number = 0.2, cb: () => void | null = null) {
+        this._tween = new Tween(this.node).to(duration, {
+            worldPosition: target
+        }, {
+            onComplete: () => {
+                cb && cb();
+                this._tween = null;
+            }
+        }).start();
     }
 
 }
