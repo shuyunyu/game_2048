@@ -2,6 +2,7 @@ import { _decorator, Component, instantiate, Layout, math, Node, Prefab } from '
 import { Square } from '../square/square';
 import { Cell, CellData, MoveDirection, NumberConfig } from '../constant';
 import { Log } from '../framework/log/log';
+import { GenericEvent } from '../framework/event/generic-event';
 const { ccclass, property } = _decorator;
 
 type MoveInfo = {
@@ -31,12 +32,19 @@ export class Grid extends Component {
 
     private _size = 4;
 
+    public cellMergedEvent: GenericEvent<number> = new GenericEvent();
+
     public get isMoving () {
         const movingSquare = this._cellList.find(cell => cell.overSquare && cell.overSquare.isMoving);
         return !!movingSquare;
     }
 
     start () {
+        const layout = this.node.getComponent(Layout);
+        layout.enabled = false;
+    }
+
+    private resetCellData () {
         this._cellList = this.node.children.map(n => {
             const square = n.getComponent(Square);
             // square.hide();
@@ -45,18 +53,18 @@ export class Grid extends Component {
                 pos: n.worldPosition.clone()
             }
         });
-
-        const layout = this.node.getComponent(Layout);
-        layout.enabled = false;
-
-        this.initGridData();
-    }
-
-    update (deltaTime: number) {
-
     }
 
     public newGrid () {
+        this._cellList.forEach(cell => {
+            if (cell.overSquare) {
+                cell.overSquare.node.removeFromParent();
+                cell.overSquare.node.destroy();
+            }
+            cell.overSquare = null;
+        });
+        this.resetCellData();
+        this.initGridData();
         this.generateSquares(2);
     }
 
@@ -189,7 +197,7 @@ export class Grid extends Component {
         moveInfoList.forEach(moveInfo => {
             const toCellData = this._cellList[moveInfo.to.row * this._size + moveInfo.to.col];
             const targetSquare = toCellData.overSquare;
-            const targetPos = toCellData.pos;
+            const targetPos = toCellData.square.node.worldPosition;
             const fromCellData = this._cellList[moveInfo.from.row * this._size + moveInfo.from.col];
             const moveSquare = fromCellData.overSquare;
 
@@ -199,7 +207,9 @@ export class Grid extends Component {
                     const config = this.getLevelConfig(newValue);
                     moveSquare.show(newValue, config.bgColor, config.fontColor);
                     moveSquare.playAni('merge');
+                    targetSquare.node.removeFromParent();
                     targetSquare.node.destroy();
+                    this.cellMergedEvent.emit(newValue);
                 }
 
             });
@@ -218,6 +228,7 @@ export class Grid extends Component {
     }
 
     private initGridData () {
+        this._grid.length = 0;
         for (let i = 0; i < this._size; i++) {
             const row = [];
             this._grid.push(row);
@@ -245,7 +256,7 @@ export class Grid extends Component {
             const squareNode = instantiate(this.squarePrefab);
             const square = squareNode.getComponent(Square);
             squareNode.setParent(this.node);
-            squareNode.setWorldPosition(cellData.pos);
+            squareNode.setWorldPosition(cellData.square.node.worldPosition);
             cellData.overSquare = square;
             this.updateCellState(cell, true);
 

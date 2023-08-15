@@ -1,4 +1,4 @@
-import { _decorator, Component, math, Node, Touch, Vec2 } from 'cc';
+import { _decorator, Component, EventKeyboard, Input, input, KeyCode, math, Node, Touch, Vec2 } from 'cc';
 import { GenericEvent } from '../framework/event/generic-event';
 import { MoveDirection } from '../constant';
 const { ccclass, property } = _decorator;
@@ -20,6 +20,7 @@ export class InputManager extends Component {
     start () {
         this.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
         this.node.on(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
+        input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
     }
 
     update (deltaTime: number) {
@@ -30,6 +31,25 @@ export class InputManager extends Component {
 
     private onTouchStart (touch: Touch) {
         this._startLocation = touch.getLocation(tempVec2_1);
+    }
+
+    private onKeyDown (event: EventKeyboard) {
+        switch (event.keyCode) {
+            case KeyCode.ARROW_UP:
+                this.moveEvent.emit(MoveDirection.UP);
+                break;
+            case KeyCode.ARROW_DOWN:
+                this.moveEvent.emit(MoveDirection.DOWN);
+                break;
+            case KeyCode.ARROW_LEFT:
+                this.moveEvent.emit(MoveDirection.LEFT);
+                break;
+            case KeyCode.ARROW_RIGHT:
+                this.moveEvent.emit(MoveDirection.RIGHT);
+                break;
+            default:
+                break;
+        }
     }
 
     private onTouchMove (touch: Touch) {

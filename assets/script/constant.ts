@@ -57,7 +57,6 @@ export type Cell = {
 
 export type CellData = {
     square: Square;
-    pos: Vec3;
     overSquare?: Square;
 }
 
