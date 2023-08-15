@@ -3,6 +3,7 @@ import { Square } from '../square/square';
 import { Cell, CellData, MoveDirection, NumberConfig } from '../constant';
 import { Log } from '../framework/log/log';
 import { GenericEvent } from '../framework/event/generic-event';
+import { PoolManager } from '../framework/pool/pool-manager';
 const { ccclass, property } = _decorator;
 
 type MoveInfo = {
@@ -58,8 +59,7 @@ export class Grid extends Component {
     public newGrid () {
         this._cellList.forEach(cell => {
             if (cell.overSquare) {
-                cell.overSquare.node.removeFromParent();
-                cell.overSquare.node.destroy();
+                PoolManager.instance.putNode(cell.overSquare.node, this.squarePrefab);
             }
             cell.overSquare = null;
         });
@@ -207,8 +207,7 @@ export class Grid extends Component {
                     const config = this.getLevelConfig(newValue);
                     moveSquare.show(newValue, config.bgColor, config.fontColor);
                     moveSquare.playAni('merge');
-                    targetSquare.node.removeFromParent();
-                    targetSquare.node.destroy();
+                    PoolManager.instance.putNode(targetSquare.node, this.squarePrefab);
                     this.cellMergedEvent.emit(newValue);
                 }
 
@@ -252,10 +251,8 @@ export class Grid extends Component {
         cells.forEach(cell => {
             const cellData = this._cellList[cell.row * this._size + cell.col];
             //create new square node
-            //TODO USE NODE POOL
-            const squareNode = instantiate(this.squarePrefab);
+            const squareNode = PoolManager.instance.getNode(this.squarePrefab, this.node);
             const square = squareNode.getComponent(Square);
-            squareNode.setParent(this.node);
             squareNode.setWorldPosition(cellData.square.node.worldPosition);
             cellData.overSquare = square;
             this.updateCellState(cell, true);
