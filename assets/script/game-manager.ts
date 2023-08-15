@@ -2,6 +2,7 @@ import { _decorator, Component, Node } from 'cc';
 import { Grid } from './grid/grid';
 import { InputManager } from './input/input-manager';
 import { MoveDirection } from './constant';
+import { Log } from './framework/log/log';
 const { ccclass, property } = _decorator;
 
 @ccclass('GameManager')
@@ -27,7 +28,7 @@ export class GameManager extends Component {
     }
 
     private onMove (dir: MoveDirection) {
-        console.log(dir)
+        Log.info(GameManager.name, "dir==>", dir);
     }
 
 }

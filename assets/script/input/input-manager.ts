@@ -3,14 +3,19 @@ import { GenericEvent } from '../framework/event/generic-event';
 import { MoveDirection } from '../constant';
 const { ccclass, property } = _decorator;
 
+const tempVec2_1 = new Vec2();
+const tempVec2_2 = new Vec2();
+
 @ccclass('InputManager')
 export class InputManager extends Component {
 
-    private _touchStarted = false;
-
-    private _tempVec2 = new Vec2();
-
     public moveEvent: GenericEvent<MoveDirection> = new GenericEvent();
+
+    private _startLocation: Vec2 = null;
+
+    private _interval = 0.05;
+
+    private _curInterval = 0;
 
     start () {
         this.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
@@ -18,30 +23,41 @@ export class InputManager extends Component {
     }
 
     update (deltaTime: number) {
-
+        if (this._startLocation) {
+            this._curInterval += deltaTime;
+        }
     }
 
     private onTouchStart (touch: Touch) {
-        this._touchStarted = true;
+        this._startLocation = touch.getLocation(tempVec2_1);
     }
 
     private onTouchMove (touch: Touch) {
-        const delta = touch.getDelta(this._tempVec2);
-        if (this._touchStarted && delta.length()) {
-            let dir: MoveDirection;
-            if (delta.y === 0) {
-                if (delta.x > 0) {
-                    dir = MoveDirection.RIGHT;
-                } else {
-                    dir = MoveDirection.LEFT;
-                }
-            } else {
-                const dirVal = delta.x / delta.y;
+        if (this._startLocation && this._curInterval >= this._interval) {
+            const location = touch.getLocation(tempVec2_2);
+            const delta = location.subtract(this._startLocation).normalize();
 
+            if (delta.length()) {
+                let dir: MoveDirection;
+                const angle = math.toDegree(Vec2.angle(delta, Vec2.UNIT_X));
+                if (angle <= 45) {
+                    dir = MoveDirection.RIGHT;
+                } else if (angle >= 135) {
+                    dir = MoveDirection.LEFT;
+                } else {
+                    if (delta.y > 0) {
+                        dir = MoveDirection.UP;
+                    } else {
+                        dir = MoveDirection.DOWN;
+                    }
+                }
+
+
+                this._startLocation = null;
+                this._curInterval = 0;
+                dir && this.moveEvent.emit(dir);
             }
 
-            this._touchStarted = false;
-            dir && this.moveEvent.emit(dir);
         }
     }
 
