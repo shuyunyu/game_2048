@@ -27,12 +27,18 @@ export class GameManager extends Component {
     @property(Label)
     public gameoverScoreLabel: Label = null;
 
+    @property(Node)
+    public gamevictoryRoot: Node = null;
+
+    private _skipMergedCheck = false;
+
     start () {
         this.init();
     }
 
     private init () {
         this.gameoverRoot.active = false;
+        this.gamevictoryRoot.active = false;
         this.grid.newGrid();
         this.inputManager.moveEvent.addEventListener(this.onMove, this);
         this.grid.cellMergedEvent.addEventListener(this.onCellMerged, this);
@@ -55,6 +61,10 @@ export class GameManager extends Component {
             this.bestLable.string = String(score);
             sys.localStorage.setItem("best-score", this.bestLable.string);
         }
+        if (val === 4 && !this._skipMergedCheck) {
+            if (this.inputManager.enabled) this.inputManager.enabled = false;
+            this.gamevictoryRoot.active = true;
+        }
     }
 
     public onGridFilled (filled: boolean) {
@@ -68,11 +78,19 @@ export class GameManager extends Component {
         if (!this.inputManager.enabled) this.inputManager.enabled = true;
         this.grid.newGrid();
         this.scoreLabel.string = "0";
+        this._skipMergedCheck = false;
     }
 
     public restart () {
         this.gameoverRoot.active = false;
+        this.gamevictoryRoot.active = false;
         this.newGame();
+    }
+
+    public continueGame () {
+        if (!this.inputManager.enabled) this.inputManager.enabled = true;
+        this.gamevictoryRoot.active = false;
+        this._skipMergedCheck = true;
     }
 
 }
