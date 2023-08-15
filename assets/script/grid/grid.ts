@@ -196,6 +196,7 @@ export class Grid extends Component {
 
     private doMoveCell (moveInfoList: MoveInfo[]) {
         let moved = false;
+        let moveCount = moveInfoList.length;
         moveInfoList.forEach(moveInfo => {
             const toCellData = this._cellList[moveInfo.to.row * this._size + moveInfo.to.col];
             const targetSquare = toCellData.overSquare;
@@ -212,7 +213,10 @@ export class Grid extends Component {
                     PoolManager.instance.putNode(targetSquare.node, this.squarePrefab);
                     this.cellMergedEvent.emit(newValue);
                 }
-
+                moveCount--;
+                if (moveCount === 0) {
+                    this.isFilled() && this.filledEvent.emit(true);
+                }
             });
 
             //update grid flag
@@ -226,7 +230,7 @@ export class Grid extends Component {
         })
         //generate new square
         moved && this.generateSquares(1);
-        this.isFilled() && this.filledEvent.emit(true);
+
     }
 
     private initGridData () {
