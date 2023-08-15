@@ -17,10 +17,18 @@ export class InputManager extends Component {
 
     private _curInterval = 0;
 
-    start () {
+    onEnable () {
         this.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
         this.node.on(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+    }
+
+    onDisable () {
+        this.node.off(Node.EventType.TOUCH_START, this.onTouchStart, this);
+        this.node.off(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
+        input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+        this._startLocation = null;
+        this._curInterval = 0;
     }
 
     update (deltaTime: number) {

@@ -1,4 +1,4 @@
-import { _decorator, Component, instantiate, Layout, math, Node, Prefab } from 'cc';
+import { _decorator, Component, instantiate, Layout, math, Node, Prefab, size } from 'cc';
 import { Square } from '../square/square';
 import { Cell, CellData, MoveDirection, NumberConfig } from '../constant';
 import { Log } from '../framework/log/log';
@@ -34,6 +34,8 @@ export class Grid extends Component {
     private _size = 4;
 
     public cellMergedEvent: GenericEvent<number> = new GenericEvent();
+
+    public filledEvent: GenericEvent<boolean> = new GenericEvent();
 
     public get isMoving () {
         const movingSquare = this._cellList.find(cell => cell.overSquare && cell.overSquare.isMoving);
@@ -224,6 +226,7 @@ export class Grid extends Component {
         })
         //generate new square
         moved && this.generateSquares(1);
+        this.isFilled() && this.filledEvent.emit(true);
     }
 
     private initGridData () {
@@ -235,6 +238,31 @@ export class Grid extends Component {
                 row.push(false);
             }
         }
+    }
+
+    private isFilled () {
+        if (!this.hasEmptyCells()) {
+            for (let i = 0; i < this._size; i++) {
+                for (let j = 0; j < this._size; j++) {
+                    const index = i * this._size + j;
+                    const left = index - 1;
+                    const right = index + 1;
+                    const up = index - this._size;
+                    const bottom = index + this._size;
+                    const equalIndexList = [left, right, up, bottom];
+                    const value = this._cellList[index].overSquare.value;
+                    for (let z = 0; z < equalIndexList.length; z++) {
+                        const eIndex = equalIndexList[z];
+                        const cellData = this._cellList[eIndex];
+                        if (cellData && cellData.overSquare.value === value) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     private generateSquares (count: number) {
@@ -281,6 +309,19 @@ export class Grid extends Component {
             }
         }
         return res;
+    }
+
+    private hasEmptyCells () {
+        for (let i = 0; i < this._grid.length; i++) {
+            const row = this._grid[i];
+            for (let j = 0; j < row.length; j++) {
+                const flag = row[j];
+                if (!flag) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private getLevelConfig (level: number) {

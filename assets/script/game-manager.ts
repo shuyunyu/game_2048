@@ -21,14 +21,22 @@ export class GameManager extends Component {
     @property(Label)
     public bestLable: Label = null;
 
+    @property(Node)
+    public gameoverRoot: Node = null;
+
+    @property(Label)
+    public gameoverScoreLabel: Label = null;
+
     start () {
         this.init();
     }
 
     private init () {
+        this.gameoverRoot.active = false;
         this.grid.newGrid();
         this.inputManager.moveEvent.addEventListener(this.onMove, this);
         this.grid.cellMergedEvent.addEventListener(this.onCellMerged, this);
+        this.grid.filledEvent.addEventListener(this.onGridFilled, this);
         const best = Utils.defaultValue(sys.localStorage.getItem("best-score"), "0");
         this.bestLable.string = best;
     }
@@ -49,9 +57,22 @@ export class GameManager extends Component {
         }
     }
 
-    public onNewGame () {
+    public onGridFilled (filled: boolean) {
+        if (this.inputManager.enabled) this.inputManager.enabled = false;
+        this.gameoverScoreLabel.string = this.scoreLabel.string;
+        this.gameoverRoot.active = true;
+        Log.info(GameManager.name, "game over!");
+    }
+
+    public newGame () {
+        if (!this.inputManager.enabled) this.inputManager.enabled = true;
         this.grid.newGrid();
         this.scoreLabel.string = "0";
+    }
+
+    public restart () {
+        this.gameoverRoot.active = false;
+        this.newGame();
     }
 
 }
