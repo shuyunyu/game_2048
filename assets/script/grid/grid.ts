@@ -17,6 +17,13 @@ type MoveInfo = {
     }
 }
 
+type SnapshotData = {
+    grid: {
+        flag: boolean;
+        value?: number;
+    }[][];
+}
+
 @ccclass('Grid')
 export class Grid extends Component {
 
@@ -37,6 +44,14 @@ export class Grid extends Component {
 
     public filledEvent: GenericEvent<boolean> = new GenericEvent();
 
+    private _snapshotData: SnapshotData = null;
+
+    private _toSnapshotDone = false;
+
+    public get snapshotData () {
+        return this._snapshotData;
+    }
+
     public get isMoving () {
         const movingSquare = this._cellList.find(cell => cell.overSquare && cell.overSquare.isMoving);
         return !!movingSquare;
@@ -50,21 +65,25 @@ export class Grid extends Component {
     private resetCellData () {
         this._cellList = this.node.children.map(n => {
             const square = n.getComponent(Square);
-            // square.hide();
             return {
-                square: square,
-                pos: n.worldPosition.clone()
+                square: square
             }
         });
     }
 
-    public newGrid () {
+    private clearOverSquare () {
         this._cellList.forEach(cell => {
             if (cell.overSquare) {
                 PoolManager.instance.putNode(cell.overSquare.node, this.squarePrefab);
             }
             cell.overSquare = null;
         });
+    }
+
+    public newGrid () {
+        this._snapshotData = null;
+        this._toSnapshotDone = false;
+        this.clearOverSquare();
         this.resetCellData();
         this.initGridData();
         this.generateSquares(2);
@@ -190,12 +209,66 @@ export class Grid extends Component {
                 }
             }
         }
-        this.doMoveCell(moveInfoList);
-        Log.info(Grid.name, "moveInfo==>", moveInfoList);
+        if (moveInfoList.length) {
+            if (!this._toSnapshotDone) this.snapshot();
+            this.doMoveCell(moveInfoList);
+            Log.info(Grid.name, "moveInfo==>", moveInfoList);
+        }
+
+    }
+
+    public toSnapshot () {
+        if (this._snapshotData && !this._toSnapshotDone) {
+            this.clearOverSquare();
+            const grid = this._snapshotData.grid;
+            for (let i = 0; i < grid.length; i++) {
+                const row = grid[i];
+                for (let j = 0; j < row.length; j++) {
+                    const cell = row[j];
+                    this._grid[i][j] = cell.flag;
+                    if (cell.flag) {
+                        const cellData = this._cellList[i * this._size + j];
+                        const squareNode = PoolManager.instance.getNode(this.squarePrefab, this.node);
+                        const square = squareNode.getComponent(Square);
+                        squareNode.setWorldPosition(cellData.square.node.worldPosition);
+                        cellData.overSquare = square;
+                        const config = this.getLevelConfig(cell.value);
+                        square.show(cell.value, config.bgColor, config.fontColor);
+                        square.playAni("generate");
+                    }
+                }
+            }
+            this._snapshotData = null;
+            this._toSnapshotDone = true;
+        }
+    }
+
+    private snapshot () {
+        if (!this._snapshotData) {
+            this._snapshotData = { grid: [] }
+        }
+        const grid = this._snapshotData.grid;
+        for (let i = 0; i < this._size; i++) {
+            if (!grid[i]) grid[i] = [];
+            for (let j = 0; j < this._size; j++) {
+                const flag = this._grid[i][j];
+                if (flag) {
+                    const index = i * this._size + j;
+                    const value = this._cellList[index].overSquare.value;
+                    grid[i][j] = {
+                        flag: flag,
+                        value: value
+                    }
+                } else {
+                    grid[i][j] = {
+                        flag: flag
+                    }
+                }
+            }
+        }
     }
 
     private doMoveCell (moveInfoList: MoveInfo[]) {
-        let moved = false;
         let moveCount = moveInfoList.length;
         moveInfoList.forEach(moveInfo => {
             const toCellData = this._cellList[moveInfo.to.row * this._size + moveInfo.to.col];
@@ -226,10 +299,9 @@ export class Grid extends Component {
             fromCellData.overSquare = null;
             toCellData.overSquare = moveSquare;
 
-            moved = true;
         })
         //generate new square
-        moved && this.generateSquares(1);
+        this.generateSquares(1);
 
     }
 

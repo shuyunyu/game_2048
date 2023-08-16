@@ -93,5 +93,11 @@ export class GameManager extends Component {
         this._skipMergedCheck = true;
     }
 
+    public toSnapshot () {
+        if (this.grid.snapshotData) {
+            this.grid.toSnapshot();
+        }
+    }
+
 }
 
