@@ -216,6 +216,8 @@ export class Grid extends Component {
             this.cellBeforeMergeEvent.emit(null);
             this.doMoveCell(moveInfoList);
             Log.info(Grid.name, "moveInfo==>", moveInfoList);
+        } else {
+            this.checkFilled();
         }
 
     }
@@ -291,7 +293,7 @@ export class Grid extends Component {
                 }
                 moveCount--;
                 if (moveCount === 0) {
-                    this.isFilled() && this.filledEvent.emit(true);
+                    this.checkFilled();
                 }
             });
 
@@ -317,6 +319,10 @@ export class Grid extends Component {
                 row.push(false);
             }
         }
+    }
+
+    private checkFilled () {
+        this.isFilled() && this.filledEvent.emit(true);
     }
 
     private isFilled () {
