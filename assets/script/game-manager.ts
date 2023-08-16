@@ -32,6 +32,8 @@ export class GameManager extends Component {
 
     private _skipMergedCheck = false;
 
+    private _beforeScore: number = 0;
+
     start () {
         this.init();
     }
@@ -41,6 +43,7 @@ export class GameManager extends Component {
         this.gamevictoryRoot.active = false;
         this.grid.newGrid();
         this.inputManager.moveEvent.addEventListener(this.onMove, this);
+        this.grid.cellBeforeMergeEvent.addEventListener(this.onCellBeforeMerge, this);
         this.grid.cellMergedEvent.addEventListener(this.onCellMerged, this);
         this.grid.filledEvent.addEventListener(this.onGridFilled, this);
         const best = Utils.defaultValue(sys.localStorage.getItem("best-score"), "0");
@@ -50,6 +53,10 @@ export class GameManager extends Component {
     private onMove (dir: MoveDirection) {
         Log.info(GameManager.name, "dir==>", dir);
         this.grid.moveCell(dir);
+    }
+
+    private onCellBeforeMerge () {
+        this._beforeScore = Number(this.scoreLabel.string);
     }
 
     private onCellMerged (val: number) {
@@ -96,6 +103,7 @@ export class GameManager extends Component {
     public toSnapshot () {
         if (this.grid.snapshotData) {
             this.grid.toSnapshot();
+            this.scoreLabel.string = String(this._beforeScore);
         }
     }
 

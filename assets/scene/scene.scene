@@ -5527,7 +5527,7 @@
     "_string": "玩法：上下左右滑动屏幕或者按下键盘上下左右键，一局游戏可以悔一步。",
     "_horizontalAlign": 0,
     "_verticalAlign": 1,
-    "_actualFontSize": 27.039473684210524,
+    "_actualFontSize": 15,
     "_fontSize": 15,
     "_fontFamily": "Arial",
     "_lineHeight": 20,

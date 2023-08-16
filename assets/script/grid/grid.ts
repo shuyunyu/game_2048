@@ -40,6 +40,8 @@ export class Grid extends Component {
 
     private _size = 4;
 
+    public cellBeforeMergeEvent: GenericEvent<any> = new GenericEvent();
+
     public cellMergedEvent: GenericEvent<number> = new GenericEvent();
 
     public filledEvent: GenericEvent<boolean> = new GenericEvent();
@@ -211,6 +213,7 @@ export class Grid extends Component {
         }
         if (moveInfoList.length) {
             if (!this._toSnapshotDone) this.snapshot();
+            this.cellBeforeMergeEvent.emit(null);
             this.doMoveCell(moveInfoList);
             Log.info(Grid.name, "moveInfo==>", moveInfoList);
         }
