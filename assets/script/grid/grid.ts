@@ -216,8 +216,6 @@ export class Grid extends Component {
             this.cellBeforeMergeEvent.emit(null);
             this.doMoveCell(moveInfoList);
             Log.info(Grid.name, "moveInfo==>", moveInfoList);
-        } else {
-            this.checkFilled();
         }
 
     }
@@ -329,18 +327,21 @@ export class Grid extends Component {
         if (!this.hasEmptyCells()) {
             for (let i = 0; i < this._size; i++) {
                 for (let j = 0; j < this._size; j++) {
-                    const index = i * this._size + j;
-                    const left = index - 1;
-                    const right = index + 1;
-                    const up = index - this._size;
-                    const bottom = index + this._size;
+                    const left = { row: i, col: j - 1 };
+                    const right = { row: i, col: j + 1 };
+                    const up = { row: i - 1, col: j };
+                    const bottom = { row: i + 1, col: j };
                     const equalIndexList = [left, right, up, bottom];
+                    const index = i * this._size + j;
                     const value = this._cellList[index].overSquare.value;
                     for (let z = 0; z < equalIndexList.length; z++) {
-                        const eIndex = equalIndexList[z];
-                        const cellData = this._cellList[eIndex];
-                        if (cellData && cellData.overSquare.value === value) {
-                            return false;
+                        const item = equalIndexList[z];
+                        if (item.row >= 0 && item.row < this._size && item.col >= 0 && item.col < this._size) {
+                            const eIndex = item.row * this._size + item.col;
+                            const cellData = this._cellList[eIndex];
+                            if (cellData && cellData.overSquare.value === value) {
+                                return false;
+                            }
                         }
                     }
                 }

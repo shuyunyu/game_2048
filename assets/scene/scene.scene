@@ -715,7 +715,7 @@
     "_string": "2048",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_actualFontSize": 60,
+    "_actualFontSize": 100,
     "_fontSize": 60,
     "_fontFamily": "Arial",
     "_lineHeight": 60,
@@ -991,7 +991,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 30,
+      "width": 29.98948769673814,
       "height": 37.8
     },
     "_anchorPoint": {
@@ -1024,7 +1024,7 @@
     "_string": "得分",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_actualFontSize": 15,
+    "_actualFontSize": 27.039473684210524,
     "_fontSize": 15,
     "_fontFamily": "Arial",
     "_lineHeight": 30,
@@ -1100,7 +1100,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 12.2353515625,
+      "width": 12.232905701129106,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -1133,7 +1133,7 @@
     "_string": "0",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_actualFontSize": 22,
+    "_actualFontSize": 39.6578947368421,
     "_fontSize": 22,
     "_fontFamily": "Arial",
     "_lineHeight": 40,
@@ -1461,7 +1461,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 45,
+      "width": 44.98423154510721,
       "height": 37.8
     },
     "_anchorPoint": {
@@ -1494,7 +1494,7 @@
     "_string": "最高分",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_actualFontSize": 15,
+    "_actualFontSize": 27.039473684210524,
     "_fontSize": 15,
     "_fontFamily": "Arial",
     "_lineHeight": 30,
@@ -1570,7 +1570,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 12.2353515625,
+      "width": 12.232905701129106,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -1603,7 +1603,7 @@
     "_string": "0",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_actualFontSize": 22,
+    "_actualFontSize": 39.6578947368421,
     "_fontSize": 22,
     "_fontFamily": "Arial",
     "_lineHeight": 40,
@@ -1822,7 +1822,7 @@
     "_string": "新游戏",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_actualFontSize": 20,
+    "_actualFontSize": 36.05263157894737,
     "_fontSize": 20,
     "_fontFamily": "Arial",
     "_lineHeight": 40,
@@ -5142,7 +5142,7 @@
     "_string": "悔一步",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_actualFontSize": 20,
+    "_actualFontSize": 36.05263157894737,
     "_fontSize": 20,
     "_fontFamily": "Arial",
     "_lineHeight": 40,
@@ -5527,7 +5527,7 @@
     "_string": "玩法：上下左右滑动屏幕或者按下键盘上下左右键，一局游戏可以悔一步。",
     "_horizontalAlign": 0,
     "_verticalAlign": 1,
-    "_actualFontSize": 15,
+    "_actualFontSize": 27.039473684210524,
     "_fontSize": 15,
     "_fontFamily": "Arial",
     "_lineHeight": 20,
